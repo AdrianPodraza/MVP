@@ -3,7 +3,7 @@ import SignInForm from "./pages/SignInForm";
 import SignUpForm from "./pages/SignUpForm";
 import Appoitment from "./pages/Appoitment";
 import HomePage from "./pages/HomePage";
-import PrivateRoute from "./components/PrivateRoute"; // Zaimportuj komponent PrivateRoute
+import PrivateRoute from "./components/PrivateRoute";
 import UserPanel from "./pages/UserPanel";
 import UserAppoitments from "./pages/UserAppoitments";
 import AdminPanel from "./pages/AdminPanel";
@@ -22,7 +22,7 @@ function App() {
         <Route path="/all-appointments" element={<AllAppointments />} />
         <Route path="/appoitment-confirm" element={<AppointmentConfirm />} />
 
-        <Route path="/user-appoitments" element={<UserAppoitments />} />
+        <Route path="/user-appointments" element={<UserAppoitments />} />
 
         <Route
           path="/appoitment"

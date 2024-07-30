@@ -7,6 +7,7 @@ import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import backgroundImage from "../assets/background.png";
 
 function Appointment() {
   const [value, setValue] = useState();
@@ -52,47 +53,60 @@ function Appointment() {
   // Handle change event to ensure the time selected is within the allowed range
 
   return (
-    <div className="flex w-[600px] flex-col gap-7 rounded-xl border-2 border-solid border-black bg-white p-20">
-      <div className="flex flex-col items-center">
-        <div className="grid h-9 w-9 place-items-center rounded-full border-2 border-solid border-black">
-          <Link to="/user-panel">
-            <FaHome className="h-6 w-6 text-yellow-300" />
-          </Link>
+    <div
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        justifyContent: "center",
+        alignItems: "center",
+        minWidth: "100vw",
+      }}
+      className="flex items-center"
+    >
+      <div className="flex w-[600px] flex-col gap-7 rounded-xl border-2 border-solid border-black bg-white p-20">
+        <div className="flex flex-col items-center">
+          <div className="grid h-9 w-9 place-items-center rounded-full border-2 border-solid border-black">
+            <Link to="/user-panel">
+              <FaHome className="h-6 w-6 text-yellow-300" />
+            </Link>
+          </div>
+          <div className="place-self-center">Rezerwacja wizyty</div>
         </div>
-        <div className="place-self-center">Rezerwacja wizyty</div>
-      </div>
 
-      <form onSubmit={handleAppointmentSubmit}>
-        <label className="text-xs">Wybierz date wizyty:</label>
-        <DatePickerComponent
-          id="datepicker"
-          placeholder="Wprowadź datę"
-          value={value}
-          min={minDateTime}
-          max={maxDateTime}
-          format="dd/MM/yyyy"
-          onChange={(e) => setValue(e.target.value)}
-        />
-      </form>
-      <div>
-        <label className="text-xs">Wybierz godzine wizyty:</label>
-        <TimePickerComponent
-          value={time}
-          id="timepicker"
-          placeholder="Wybierz godzinę"
-          format="HH:mm"
-          step={60}
-          min={new Date(new Date().setHours(8, 0, 0, 0))}
-          max={new Date(new Date().setHours(16, 0, 0, 0))}
-          onChange={handleTimeChange}
-        ></TimePickerComponent>
+        <form onSubmit={handleAppointmentSubmit}>
+          <label className="text-xs">Wybierz date wizyty:</label>
+          <DatePickerComponent
+            id="datepicker"
+            placeholder="Wprowadź datę"
+            value={value}
+            min={minDateTime}
+            max={maxDateTime}
+            format="dd/MM/yyyy"
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </form>
+        <div>
+          <label className="text-xs">Wybierz godzine wizyty:</label>
+          <TimePickerComponent
+            value={time}
+            id="timepicker"
+            placeholder="Wybierz godzinę"
+            format="HH:mm"
+            step={60}
+            min={new Date(new Date().setHours(8, 0, 0, 0))}
+            max={new Date(new Date().setHours(16, 0, 0, 0))}
+            onChange={handleTimeChange}
+          ></TimePickerComponent>
+        </div>
+        <button
+          onClick={handleAppointmentSubmit}
+          className="grid place-items-center rounded-full bg-green-400 p-3 font-bold text-white"
+        >
+          Zarezerwuj
+        </button>
       </div>
-      <button
-        onClick={handleAppointmentSubmit}
-        className="grid place-items-center rounded-full bg-green-400 p-3 font-bold text-white"
-      >
-        Zarezerwuj
-      </button>
     </div>
   );
 }

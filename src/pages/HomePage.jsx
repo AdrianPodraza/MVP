@@ -1,13 +1,16 @@
-import LogOutButton from "../components/LogOutButton";
+import Navbar from "../components/Navbar";
 import SignInButton from "./../components/SignInButton";
 import SignUpButton from "./../components/SignUpButton";
+import hero from "../assets/hero.png";
+
 function HomePage() {
   return (
-    <div className="flex h-screen items-center justify-center bg-[#070F2B]">
-      <div className="flex w-fit flex-col gap-10">
+    <div className="flex h-screen w-full bg-[#070F2B] flex-col">
+      <Navbar>
         <SignInButton />
         <SignUpButton />
-      </div>
+      </Navbar>
+      <img className="h-screen w-screen" src={hero} />
     </div>
   );
 }

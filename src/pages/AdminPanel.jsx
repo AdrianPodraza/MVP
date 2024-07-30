@@ -9,7 +9,6 @@ function AdminPanel() {
 
   useEffect(() => {
     const isAdmin = localStorage.getItem("admin") === "true";
-    console.log(isAdmin);
 
     if (!isAdmin) {
       navigate("/user-panel");

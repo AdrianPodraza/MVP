@@ -1,9 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const UserModel = require("./models/User");
 const AppointmentModel = require("./models/Appointment");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { sendSms } = require("./services/twilioService");
 
 const app = express();
 app.use(express.json());
@@ -17,7 +20,7 @@ const verifyToken = (req, res, next) => {
     return res.status(403).send({ message: "No token provided." });
 
   const token = bearerHeader.split(" ")[1];
-  jwt.verify(token, "tajny_klucz", (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err)
       return res.status(500).send({ message: "Failed to authenticate token." });
 
@@ -29,64 +32,71 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-app.post("/register", (req, res) => {
-  const { email, phoneNumber } = req.body;
+app.post("/register", async (req, res) => {
+  const { email, phoneNumber, password } = req.body;
 
-  UserModel.findOne({ $or: [{ email }, { phoneNumber }] })
-    .then((existingUser) => {
-      if (existingUser) {
-        return res.status(409).send({
-          message: "User with this email or phone number already exists.",
-        });
-      }
-      UserModel.create(req.body)
-        .then((user) => res.json(user))
-        .catch((err) => res.status(500).json(err));
-    })
-    .catch((err) =>
-      res.status(500).json({ message: "Error checking user existence." }),
-    );
+  try {
+    const existingUser = await UserModel.findOne({
+      $or: [{ email }, { phoneNumber }],
+    });
+    if (existingUser) {
+      return res.status(409).send({
+        message: "User with this email or phone number already exists.",
+      });
+    }
+
+    // Haszowanie hasła
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await UserModel.create({
+      ...req.body,
+      password: hashedPassword,
+    });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Error checking user existence." });
+  }
 });
 
 app.listen(3001, () => {
   console.log("server is runing");
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  UserModel.findOne({ $or: [{ email: email }, { phoneNumber: email }] }).then(
-    (user) => {
-      if (!user) {
-        res.json("no user");
-        return;
-      }
-      if (user.password === password) {
-        const token = jwt.sign(
-          {
-            userID: user._id,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            admin: user.admin,
-          },
-          "tajny_klucz",
-          {
-            expiresIn: "1h",
-          },
-        );
-        res.json({
-          message: "Success",
-          token,
-          userData: {
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            admin: user.admin,
-          },
-        });
-      } else {
-        res.json("the password is incorrect");
-      }
+  const user = await UserModel.findOne({
+    $or: [{ email }, { phoneNumber: email }],
+  });
+
+  if (!user) {
+    return res.status(404).json("no user");
+  }
+
+  // Weryfikacja hasła
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(401).json("the password is incorrect");
+  }
+
+  const token = jwt.sign(
+    {
+      userID: user._id,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      admin: user.admin,
     },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
   );
+
+  res.json({
+    message: "Success",
+    token,
+    userData: {
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      admin: user.admin,
+    },
+  });
 });
 
 app.post("/book-appointment", verifyToken, (req, res) => {
@@ -108,7 +118,7 @@ app.post("/book-appointment", verifyToken, (req, res) => {
           AppointmentModel.create({ userId, date, time, phoneNumber, email })
             .then((appointment) => res.json(appointment))
             .catch((err) => res.status(500).json(err));
-        },
+        }
       );
     })
     .catch((err) => res.status(500).send({ message: "Error fetching user." }));
@@ -129,7 +139,7 @@ app.get("/my-appointment", verifyToken, (req, res) => {
       res.json(appointment);
     })
     .catch((err) =>
-      res.status(500).send({ message: "Error fetching appointment." }),
+      res.status(500).send({ message: "Error fetching appointment." })
     );
 });
 app.get("/appointments", (req, res) => {
@@ -159,5 +169,17 @@ app.post("/cancel-appointment/:id", async (req, res) => {
     res.status(200).send("Appointment cancelled");
   } catch (err) {
     res.status(500).send(err);
+  }
+});
+
+app.post("/send-sms", async (req, res) => {
+  const { to, message } = req.body;
+
+  try {
+    await sendSms(to, message);
+    res.status(200).send("SMS sent successfully.");
+  } catch (error) {
+    console.error("Error sending SMS:", error);
+    res.status(500).send("Failed to send SMS.");
   }
 });
