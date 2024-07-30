@@ -23,7 +23,8 @@ Przejdź do katalogu, w którym chcesz sklonować repozytorium. Użyj polecenia:
 cd /ścieżka/do/katalogu
 ```
 
-###3. Sklonuj repozytorium
+### 3. Sklonuj repozytorium
+
 Użyj poniższego polecenia, aby sklonować repozytorium:
 
 ```bash
@@ -32,20 +33,22 @@ git clone https://github.com/AdrianPodraza/MVP
 
 ````
 
-###4. Przejdź do katalogu serwera
+### 4. Przejdź do katalogu serwera
 Po sklonowaniu repozytorium, przejdź do katalogu serwera:
 ```bash
 cd server
 ````
 
-###5. Zainstaluj moduły serwera
+### 5. Zainstaluj moduły serwera
+
 Zainstaluj wszystkie moduły przy pomocy polecenia:
 
 ```bash
 npm install
 ```
 
-###6. Zainstaluj moduły frontendu
+### 6. Zainstaluj moduły frontendu
+
 Cofnij się do głównego katalogu i zainstaluj potrzebne moduły frontendu:
 
 ```bash
@@ -53,7 +56,8 @@ cd ..
 npm install
 ```
 
-###7. Uruchom serwer
+### 7. Uruchom serwer
+
 Otwórz dwa terminale:
 W pierwszym terminalu, w katalogu serwera, wpisz:
 
@@ -67,5 +71,6 @@ W drugim terminalu, w katalogu głównym, wpisz:
 npm run dev
 ```
 
-###8.Użycie
+### 8.Użycie
+
 Po wykonaniu powyższych kroków, aplikacja powinna być uruchomiona i dostępna w przeglądarce
