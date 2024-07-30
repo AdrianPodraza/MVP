@@ -31,13 +31,13 @@ Użyj poniższego polecenia, aby sklonować repozytorium:
 git clone https://github.com/AdrianPodraza/MVP
 ```
 
-````
-
 ### 4. Przejdź do katalogu serwera
+
 Po sklonowaniu repozytorium, przejdź do katalogu serwera:
+
 ```bash
 cd server
-````
+```
 
 ### 5. Zainstaluj moduły serwera
 
